@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  testapp:
+    container_name: test 
+    restart: always
+    build: ./testapp
+    command: gunicorn -k gevent -w 1 -b :8000 testkafka:app
+    networks:
+      - nginx_network
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx
+    ports:
+      - 8000:80
+    depends_on:
+      - testapp
+    networks:
+      - nginx_network
+      
+networks:
+  nginx_network:
+    driver: bridge

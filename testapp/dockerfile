@@ -1,0 +1,6 @@
+FROM continuumio/miniconda3
+ADD . /code
+WORKDIR /code
+RUN conda update -y conda 
+RUN conda install -y -c anaconda numpy flask gunicorn gevent
+RUN conda install -y -c conda-forge flask-socketio kafka-python
