@@ -6,9 +6,10 @@ services:
     container_name: test 
     restart: always
     build: ./testapp
-    command: gunicorn -k gevent -w 1 -b :8000 testkafka:app
+    command: gunicorn -k gevent -w 1 -b :8100 epdsim:app
     networks:
       - nginx_network
+#      - broker
 
   nginx:
     container_name: nginx
@@ -24,3 +25,5 @@ services:
 networks:
   nginx_network:
     driver: bridge
+#  broker:
+#    external: true

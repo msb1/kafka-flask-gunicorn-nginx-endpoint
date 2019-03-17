@@ -1,5 +1,6 @@
 var producer_socket;
 var consumer_socket;
+var epd_socket;
 
 
 $(document).ready(function(){
@@ -9,12 +10,12 @@ $(document).ready(function(){
 
     //receive details from server
     producer_socket.on('newMessage', function(msg) {
-        console.log("Received number" + msg.message);
+        console.log("Received producer: " + msg.msg);
         //maintain a list of ten numbers
-        if (msg_received.length >= 5){
+        if (msg_received.length >= 4){
             msg_received.shift()
         }            
-        msg_received.push(msg.message);
+        msg_received.push(msg.msg);
         msg_string = '';
         for (var i = 0; i < msg_received.length; i++){
             msg_string = msg_string + '<p>' + msg_received[i].toString() + '</p>';
@@ -29,13 +30,13 @@ $(document).ready(function(){
     var msg_received = [];
 
     //receive details from server
-    producer_socket.on('newMessage', function(msg) {
-        console.log("Received number" + msg.message);
+    consumer_socket.on('newMessage', function(msg) {
+        console.log("Received consumer: " + msg.msg);
         //maintain a list of ten numbers
-        if (msg_received.length >= 5){
+        if (msg_received.length >= 4){
             msg_received.shift()
         }            
-        msg_received.push(msg.message);
+        msg_received.push(msg.msg);
         msg_string = '';
         for (var i = 0; i < msg_received.length; i++){
             msg_string = msg_string + '<p>' + msg_received[i].toString() + '</p>';
@@ -43,6 +44,18 @@ $(document).ready(function(){
         $('#consumer').html(msg_string);
     });
 });
+
+$(document).ready(function(){
+    //connect to the socket server.
+    epd_socket = io.connect('http://' + document.domain + ':' + location.port + '/epd');
+
+    //receive details from server
+    epd_socket.on('newMessage', function(msg) {
+        console.log("Received status: " + msg.msg);
+        $('#status').html(msg.msg.toString());
+    });
+});
+
 
 function start_producer() {
 	producer_socket.emit('message', 'start');
@@ -59,4 +72,5 @@ function stop_producer() {
 function stop_consumer() {
 	consumer_socket.emit('message', 'stop');
 }
+
 
