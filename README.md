@@ -6,29 +6,30 @@
     The purpose of this application is enable a Kafka endpoint simulator for testing Kafka, Kafka Connect and Kafka Streams with simulated analytics data streams
   </li>
   <li>
-    In this test application, kafka-python is used to spawn a producer and consumer which are each enabled in a separate classes that inherit threading.Thread 
+    In this test application, confluent kafka-python is used to spawn a producer and consumer which are each enabled in a separate Greenlets that inherit gevent.Greenlet 
     <ul>
-      <li> Currently the producer and consumer are set to bootstrap_servers='localhost:9092. Change the following lines to enable different kafka brokers. </li>
-      <li> self.consumer = KafkaConsumer(topic, bootstrap_servers='localhost:9092', consumer_timeout_ms=1000) </li>
-      <li> self.producer = KafkaProducer(bootstrap_servers='localhost:9092') </li>
-      <li> The default topic is current set to 'sim-test'. This should be changed as well to suit the needs of the application
+      <li> Currently the producer and consumer defaults to bootstrap_servers='localhost:9092. Enter info in side nav menu for bootstrap-server and topics, etc.. </li>
+      <li> There is an epd.conf file that should be edited to make changes in the simulator outputs. This file is in the testapp folder
     </ul>
   </li>
   <li>
-    These classes are instantiated when the Flask application begins and the threads are closed/joined when the application (or web page) is closed
+    These Greenlet classes are instantiated when the Flask application begins and closed/joined when the application (or web page) is closed
   </li>
   <li> 
     The web page is based on the bootstrap sample dashboard from https://startbootstrap.com/previews/sb-admin-2/ so there is considerable flexibility in its application. There are currently a start and stop button in the left-side collapsable menu.
   </li>
   <li> 
-    flask-socketio provides access to low latency bi-directional communications between the client web page and the server. The client-side application uses javascript Socket.io
+    flask-socketio provides access to low latency bi-directional communications between the client web page and the server. The client-side application uses javascript Socket.io... 
+  </li>
+  <li>
+    gevent is used with the flask-socket io from the Gunicorn server. Monkey patching of the sockets is used to optimize app performance.
   </li>
 </ol>
 
 <h4>Server Info </h4>
 <ol>
   <li>
-    Gunicorn is used as the WSGI HTTP server to run flask app - testkafka.py. As this app utilizes flask-socketio, the gevent worker is also needed. The following is included in the docker-compose.yml file to start the Gunicorn server with the gevent worker.
+    Gunicorn is used as the WSGI HTTP server to run flask app - testkafka.py. As this app utilizes flask-socketio, a gevent (or eventlet) worker is also needed. The following is included in the docker-compose.yml file to start the Gunicorn server with the gevent worker.
   </li>
   <li>
     command: gunicorn -k gevent -w 1 -b :8000 testkafka:app 
