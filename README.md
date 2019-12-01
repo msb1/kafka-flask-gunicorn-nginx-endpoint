@@ -1,4 +1,4 @@
-### kafka-flask-gunicorn-nginx-tester
+### kafka-flask-gunicorn-nginx-endpoint
 
 <h4> General Info </h4>
 <ol>
